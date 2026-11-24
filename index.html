@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090e1b">
+<title>Tagging Studio — Independent POS Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+:root{--bg:#090e1b;--panel:#101827;--panel2:#0b1423;--ink:#e6edff;--muted:#8293b2;--line:#202d45;--blue:#8299ff;--blue-soft:#1b2945;--gold:#c5a0ff;--green:#5fd6c8;--shadow:0 16px 42px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% -10%,#1b2945 0,transparent 38%),var(--bg);color:var(--ink);font:14px/1.55 'DM Sans',system-ui,sans-serif;min-height:100vh}
+.shell{max-width:1500px;margin:auto;padding:26px 30px 34px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:15px}
+.brand{display:flex;align-items:center;gap:13px}.monogram{width:45px;height:45px;border-radius:14px;background:linear-gradient(135deg,#9aabff,#6d83ed);color:#0b1223;display:grid;place-items:center;font:700 23px Georgia;box-shadow:0 8px 24px #8299ff35}
+.brand strong{display:block;letter-spacing:2.4px;font-size:13px}.brand small{font-size:10px;letter-spacing:1.5px;color:var(--muted)}
+.live{border:1px solid #263655;background:#121d32;border-radius:30px;padding:7px 12px;color:#9aabff;font-size:10px;font-weight:700;letter-spacing:.7px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}.eyebrow,.kicker{color:var(--blue);font-size:10px;letter-spacing:2px;font-weight:700}
+.hero h1{font:700 clamp(29px,3.4vw,43px)/1.1 'Playfair Display',Georgia;margin:8px 0 10px;letter-spacing:-.5px}.hero h1 span{color:var(--blue)}
+.hero p{color:var(--muted);margin:0;max-width:700px}.hero-note{text-align:right;color:#8292b0;font-size:10px;line-height:1.8;letter-spacing:1px}
+.workspace{display:grid;grid-template-columns:minmax(330px,.9fr) minmax(480px,1.2fr);gap:18px;align-items:start}
+.panel{background:linear-gradient(150deg,#111c2e,#0e1726);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:20px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:16px}
+.panel h2{font-size:16px;margin:3px 0;color:#e4ebff}.muted{font-size:12px;color:var(--muted);margin:0}
+.stat{background:#121d30;border:1px solid #263550;border-radius:8px;padding:6px 9px;font-size:10px;color:#9aadd0;white-space:nowrap}
+.field-label{display:block;font-size:10px;letter-spacing:1.2px;font-weight:700;color:#91a4c8;margin:15px 0 7px}
+textarea,select,input[type=search]{width:100%;border:1px solid #263650;border-radius:10px;background:#0b1322;padding:12px;color:var(--ink);font:13px/1.65 'DM Sans',sans-serif;outline:none}
+textarea:focus,select:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #8299ff20}
+#source{min-height:310px;resize:vertical}
+.drop{border:1px dashed #40577c;border-radius:10px;padding:12px;background:#0d1728;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11px;color:#9aadd0}
+.drop input{max-width:190px;font-size:11px;color:#9aadd0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid transparent;border-radius:9px;padding:9px 13px;font:700 11px 'DM Sans';cursor:pointer;transition:.18s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.08)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.primary{background:var(--blue);color:#0b1223}.secondary{background:#1b2945;color:#c5d0ff;border-color:#2a3b5d}.outline{background:#111c2e;border-color:#2a3953;color:#c4d0e8}.gold{background:#292438;border-color:#49405a;color:#d4c3ff}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.statline{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.help{font-size:11px;color:var(--muted);margin:10px 0 0}.warning{background:#121d30;border-left:3px solid var(--blue);padding:10px 12px;font-size:11px;color:#a1b2d0;margin-top:13px;border-radius:0 8px 8px 0}
+.rightcol{display:grid;gap:18px}.resultbox{background:#0b1423;border:1px solid #263550;border-radius:12px;min-height:255px;padding:15px;line-height:2.35;overflow-wrap:anywhere}
+.empty{color:#7184a8;text-align:center;padding:70px 12px;font-size:12px}
+.token{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:2px 7px;margin:2px 3px 2px 0;background:#15233a;border:1px solid #2a3e60;cursor:pointer;vertical-align:middle}
+.token:hover{outline:2px solid #8299ff88}.token .word{color:#e4ecff}.token .tag{font-size:10px;font-weight:700;color:#91a8ff}
+.tag.N{color:#91a8ff!important}.tag.V{color:#5fd6c8!important}.tag.A{color:#f2bd72!important}.tag.R{color:#c5a0ff!important}.tag.P{color:#ff91a6!important}.tag.C{color:#9eacc5!important}.tag.D{color:#f2bd72!important}
+.legend{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.legend span{font-size:10px;border:1px solid #2a3953;border-radius:20px;padding:3px 8px;background:#121d30;color:#a8b9d8}
+.analytics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.metric{padding:10px;background:#121d30;border:1px solid #263550;border-radius:10px}.metric b{display:block;font:700 20px 'Playfair Display';color:#eef2ff}.metric small{font-size:10px;color:var(--muted)}
+.barrow{display:grid;grid-template-columns:48px 1fr 30px;gap:8px;align-items:center;margin:7px 0;font-size:11px;color:#a9b9d4}.bar{height:7px;background:#202d43;border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#6d83ed,#a5b2ff);border-radius:8px}
+.searchrow{display:flex;gap:8px;align-items:center;margin:12px 0}.searchrow input{flex:1}.frequency{max-height:180px;overflow:auto;border-top:1px solid var(--line);margin-top:8px}.freqitem{display:flex;justify-content:space-between;padding:7px 2px;border-bottom:1px solid #202d43;font-size:11px;color:#c4d0e8}.freqitem button{border:0;background:none;color:#9aabff;font-weight:700;cursor:pointer}
+.modal{position:fixed;inset:0;background:#030817bb;display:none;place-items:center;padding:20px;z-index:5}.modal.open{display:grid}.dialog{background:#101827;border:1px solid #263550;border-radius:15px;padding:20px;width:min(380px,100%);box-shadow:0 20px 60px #0008}.dialog h3{margin:0 0 12px;color:#e4ebff}.dialog .row{margin-top:14px;justify-content:flex-end}
+footer{text-align:center;color:#637493;font-size:10px;padding-top:22px;letter-spacing:.7px}
+@media(max-width:980px){.workspace{grid-template-columns:1fr}.hero-note{display:none}}
+@media(max-width:560px){.shell{padding:16px}.analytics{grid-template-columns:repeat(2,1fr)}header{align-items:flex-start}.live{font-size:9px}.panel{padding:15px}.controls{grid-template-columns:1fr}.drop{align-items:flex-start;flex-direction:column}.drop input{max-width:100%}.panel-head{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="brand"><div class="monogram">T</div><div><strong>TAGGING STUDIO</strong><small>INDEPENDENT CORPUS ANNOTATION LAB</small></div></div>
+  <div class="live">● LOCAL ENGINE · READY</div>
+</header>
+<section class="hero">
+  <div><div class="eyebrow">ACADEMIC LUXURY · ENGLISH NLP WORKSPACE</div><h1>Independent <span>POS Tagging</span> Studio</h1><p>Annotate English text with an independent, rule-based C5/C7-style tagger. Review every decision, correct tags manually, and inspect corpus-level patterns.</p></div>
+  <div class="hero-note">MIDNIGHT / PERIWINKLE EDITION<br>RESPONSIVE WORKSPACE<br>LOCAL PROCESSING</div>
+</section>
+<main class="workspace">
+<section class="panel">
+  <div class="panel-head"><div><div class="kicker">01 / INPUT EDITOR</div><h2>Source document</h2><p class="muted">Paste text or upload a DOCX / TXT file.</p></div><span class="stat" id="sourceStatus">No document</span></div>
+  <div class="drop"><span>↥ &nbsp; Upload a document</span><input id="fileInput" type="file" accept=".txt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
+  <label class="field-label" for="source">TEXT TO BE TAGGED</label>
+  <textarea id="source" placeholder="Paste an English passage here, or upload a TXT / DOCX file..."></textarea>
+  <div class="statline"><span class="stat" id="words">0 words</span><span class="stat" id="chars">0 characters</span></div>
+  <div class="controls">
+    <div><label class="field-label" for="tagset">TAGSET PROFILE</label><select id="tagset"><option value="c5">C5 · compact inventory</option><option value="c7" selected>C7 · extended inventory</option></select></div>
+    <div><label class="field-label" for="format">OUTPUT FORMAT</label><select id="format"><option value="inline">Word + tag</option><option value="tagged">Underscore tokens</option><option value="vertical">One token per line</option></select></div>
+  </div>
+  <div class="row" style="margin-top:14px"><button class="btn primary" id="run">Run independent tagger →</button><button class="btn outline" id="clear">Clear</button><button class="btn secondary" id="sample">Load sample</button></div>
+  <p class="help">Runs locally in your browser. Click any output token to inspect or change its tag.</p>
+  <div class="warning"><b>Method note.</b> This is an independent educational tagger, not the Lancaster CLAWS engine. C5/C7 profiles are approximate compatible-style inventories, not certified CLAWS output.</div>
+</section>
+<div class="rightcol">
+<section class="panel">
+  <div class="panel-head"><div><div class="kicker">02 / ANNOTATION VIEW</div><h2>Tagged output</h2><p class="muted">Click any token to manually correct its POS tag.</p></div><div class="row"><button class="btn outline" id="copy">Copy</button><button class="btn secondary" id="download">Export TXT</button></div></div>
+  <div class="legend"><span>🔵 N · Noun</span><span>🟢 V · Verb</span><span>🟠 A · Adjective</span><span>🟣 R · Adverb</span><span>🔴 P · Pronoun</span><span>⚪ Other</span></div>
+  <div id="output" class="resultbox"><div class="empty">Your POS-tagged text will appear here.<br>Enter text and select “Run independent tagger”.</div></div>
+  <div class="statline"><span class="stat" id="tokenTotal">0 tokens</span><span class="stat" id="tagTotal">0 unique tags</span><span class="stat" id="editedTotal">0 manual corrections</span></div>
+</section>
+<section class="panel">
+  <div class="panel-head"><div><div class="kicker">03 / POS ANALYTICS</div><h2>Corpus profile</h2><p class="muted">Distribution updates when tags are generated or corrected.</p></div></div>
+  <div class="analytics"><div class="metric"><b id="mTokens">0</b><small>Tokens</small></div><div class="metric"><b id="mTypes">0</b><small>Word types</small></div><div class="metric"><b id="mTags">0</b><small>POS categories</small></div><div class="metric"><b id="mEdited">0</b><small>Corrections</small></div></div>
+  <div id="bars"><p class="muted">Run the tagger to calculate POS distribution.</p></div>
+  <div class="searchrow"><input id="freqSearch" type="search" placeholder="Search word or POS tag frequency..."><span class="stat" id="freqCount">0 matches</span></div>
+  <div class="frequency" id="frequency"><p class="muted">Frequency list will appear here.</p></div>
+</section>
+</div>
+</main>
+<footer>TAGGING STUDIO · INDEPENDENT C5 / C7-STYLE HEURISTIC ENGINE · HUMAN-IN-THE-LOOP ANNOTATION</footer>
+</div>
+<div class="modal" id="editModal"><div class="dialog"><h3>Manual tag correction</h3><p class="muted" id="editWord"></p><label class="field-label" for="editTag">POS TAG</label><select id="editTag"></select><div class="row"><button class="btn outline" id="cancelEdit">Cancel</button><button class="btn primary" id="saveEdit">Save correction</button></div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+let tokens=[],editIndex=-1,edited=0;
+const lex={
+the:'AT0',a:'AT0',an:'AT0',this:'DT0',that:'DT0',these:'DT0',those:'DT0',
+i:'PNP',you:'PNP',he:'PNP',she:'PNP',it:'PNP',we:'PNP',they:'PNP',me:'PNP',him:'PNP',her:'PNP',us:'PNP',them:'PNP',
+my:'DPS',your:'DPS',his:'DPS',our:'DPS',their:'DPS',and:'CJC',but:'CJC',or:'CJC',because:'CJS',although:'CJS',if:'CJS',while:'CJS',
+to:'TO0',of:'PRF',in:'PRP',on:'PRP',at:'PRP',for:'PRP',with:'PRP',from:'PRP',by:'PRP',
+is:'VBZ',are:'VBR',am:'VBB',was:'VBD',were:'VBD',be:'VBI',been:'VBN',being:'VBG',
+have:'VHB',has:'VHZ',had:'VHD',do:'VDB',does:'VDZ',did:'VDD',
+can:'VM0',could:'VM0',will:'VM0',would:'VM0',shall:'VM0',should:'VM0',may:'VM0',might:'VM0',must:'VM0',
+not:'XX0',very:'AV0',too:'AV0',also:'AV0',here:'AV0',there:'AV0',how:'AVQ',what:'DTQ',who:'PNQ',which:'DTQ',when:'AVQ',where:'AVQ',why:'AVQ',
+one:'CRD',two:'CRD',three:'CRD'
+};
+const tagLabels={NN1:'singular noun',NN2:'plural noun',NP0:'proper noun',VV0:'base verb',VVD:'past verb',VVG:'-ing verb',VVN:'past participle',VVZ:'3rd-person verb',AJ0:'adjective',AJC:'comparative adjective',AJS:'superlative adjective',AV0:'adverb',AT0:'article',DT0:'determiner',PNP:'personal pronoun',PNI:'indefinite pronoun',PP0:'preposition',PRP:'preposition',CJC:'coordinating conjunction',CJS:'subordinating conjunction',PUN:'punctuation',CRD:'cardinal number',TO0:'to infinitive',XX0:'negative particle',DPS:'possessive determiner',VBZ:'be verb',VBR:'be verb',VBB:'be verb',VBD:'past be',VBI:'be infinitive',VBN:'be participle',VBG:'be -ing',VHB:'have verb',VHZ:'have verb',VHD:'past have',VDB:'do verb',VDZ:'do verb',VDD:'past do',VM0:'modal verb',AVQ:'wh-adverb',DTQ:'wh-determiner',PNQ:'wh-pronoun',PRF:'of-preposition'};
+const c5map={NN1:'NN',NN2:'NNS',NP0:'NP',VV0:'VV',VVD:'VVD',VVG:'VVG',VVN:'VVN',VVZ:'VVZ',AJ0:'AJ',AJC:'AJ',AJS:'AJ',AV0:'AV',AT0:'AT',DT0:'DT',PNP:'PN',PNI:'PN',PP0:'PR',PRP:'PR',CJC:'C',CJS:'C',PUN:'.',CRD:'MC',TO0:'TO',XX0:'XX',DPS:'DPS',VBZ:'VBZ',VBR:'VBR',VBB:'VBB',VBD:'VBD',VBI:'VBI',VBN:'VBN',VBG:'VBG',VHB:'VHB',VHZ:'VHZ',VHD:'VHD',VDB:'VDB',VDZ:'VDZ',VDD:'VDD',VM0:'VM0',AVQ:'AVQ',DTQ:'DTQ',PNQ:'PNQ',PRF:'PRF'};
+const c7tags=['NN1','NN2','NP0','VV0','VVD','VVG','VVN','VVZ','AJ0','AJC','AJS','AV0','AT0','DT0','PNP','PNI','PP0','PRP','CJC','CJS','PUN','CRD','ORD','TO0','XX0','DPS','VBZ','VBR','VBB','VBD','VBI','VBN','VBG','VHB','VHZ','VHD','VDB','VDZ','VDD','VM0','AVQ','DTQ','PNQ','PRF'];
+function profile(tag){return $('tagset').value==='c5'?(c5map[tag]||tag):tag}
+function infer(w,i,arr){
+ const x=w.toLowerCase(),prev=(arr[i-1]||'').toLowerCase();
+ if(lex[x])return lex[x];
+ if(/^[.,!?;:()[\]{}"'“”‘’—-]+$/.test(w))return 'PUN';
+ if(/^\d/.test(w))return 'CRD';
+ if(/^[A-Z][a-z]/.test(w)&&i>0)return 'NP0';
+ if(/ly$/.test(x))return 'AV0';
+ if(/ing$/.test(x))return 'VVG';
+ if(/ed$/.test(x))return 'VVD';
+ if(/(ous|ful|less|ive|able|ible|al|ic|ish)$/.test(x))return 'AJ0';
+ if(/est$/.test(x))return 'AJS';
+ if(/er$/.test(x)&&prev==='the')return 'AJC';
+ if(prev==='to')return 'VV0';
+ if(['the','a','an','this','that','my','your','his','her','our','their'].includes(prev))return /s$/.test(x)?'NN2':'NN1';
+ if(['is','are','was','were','be','been','being','has','have','had','will','can','could','should','would','may','might','must','do','does','did'].includes(prev))return 'VV0';
+ if(/s$/.test(x)&&!/(ss|us|is)$/.test(x))return 'NN2';
+ if(i===0&&/^[A-Z]/.test(w))return 'NP0';
+ return 'NN1';
+}
+function run(){
+ const source=$('source').value.trim();if(!source){alert('Enter or upload source text first.');return}
+ const words=source.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|\d+(?:[.,]\d+)*|[^\sA-Za-z\d]/g)||[];
+ tokens=words.map((word,i)=>({word,tag:infer(word,i,words),edited:false}));edited=0;render();
+}
+function render(){
+ const out=$('output');out.innerHTML='';
+ if(!tokens.length){out.innerHTML='<div class="empty">No tagged output yet.</div>';updateStats();return}
+ tokens.forEach((t,i)=>{
+  const span=document.createElement('span');span.className='token';span.title='Click to correct this tag';
+  const word=document.createElement('span'),tag=document.createElement('span');word.className='word';tag.className='tag';word.textContent=t.word;tag.textContent=profile(t.tag);tag.classList.add(t.tag[0]||'O');span.append(word,tag);span.onclick=()=>edit(i);out.append(span,document.createTextNode(' '));
+ });updateStats();
+}
+function updateStats(){
+ const counts={},words={};tokens.forEach(t=>{const tag=profile(t.tag),w=t.word.toLowerCase();counts[tag]=(counts[tag]||0)+1;words[w]=(words[w]||0)+1});
+ const total=tokens.length,types=Object.keys(words).length;
+ $('tokenTotal').textContent=total+' tokens';$('tagTotal').textContent=Object.keys(counts).length+' unique tags';$('editedTotal').textContent=edited+' manual corrections';
+ $('mTokens').textContent=total;$('mTypes').textContent=types;$('mTags').textContent=Object.keys(counts).length;$('mEdited').textContent=edited;
+ $('bars').innerHTML='';Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([tag,n])=>{const d=document.createElement('div');d.className='barrow';const name=document.createElement('b'),bar=document.createElement('div'),fill=document.createElement('i'),count=document.createElement('span');bar.className='bar';fill.style.width=(n/Math.max(1,total)*100)+'%';bar.append(fill);name.textContent=tag;count.textContent=n;d.append(name,bar,count);$('bars').append(d)});
+ const q=$('freqSearch').value.toLowerCase(),items=Object.entries(words).map(([word,n])=>({word,n,tag:profile(tokens.find(t=>t.word.toLowerCase()===word)?.tag||'NN1')})).filter(x=>x.word.includes(q)||x.tag.toLowerCase().includes(q)).sort((a,b)=>b.n-a.n);
+ $('freqCount').textContent=items.length+' matches';$('frequency').innerHTML='';
+ items.slice(0,100).forEach(x=>{const d=document.createElement('div');d.className='freqitem';const label=document.createElement('span'),btn=document.createElement('button');label.textContent=x.word+' · '+x.tag;btn.textContent=x.n+' ×';btn.onclick=()=>{$('freqSearch').value=x.word;updateStats()};d.append(label,btn);$('frequency').append(d)});
+ if(!items.length)$('frequency').textContent='No matching words or tags.';
+}
+function edit(i){
+ editIndex=i;const t=tokens[i];$('editWord').textContent='Token: “'+t.word+'” · current tag: '+profile(t.tag);
+ const options=$('tagset').value==='c5'?[...new Set(Object.values(c5map))]:c7tags;
+ const select=$('editTag');select.innerHTML='';
+ options.forEach(o=>{const option=document.createElement('option');option.value=o;option.textContent=o+' — '+(tagLabels[o]||'POS category');select.append(option)});
+ const current=profile(t.tag);if(options.includes(current))select.value=current;$('editModal').classList.add('open');
+}
+function saveEdit(){
+ if(editIndex<0)return;const val=$('editTag').value;
+ const reverse=Object.fromEntries(Object.entries(c5map).map(([k,v])=>[v,k]));
+ tokens[editIndex].tag=$('tagset').value==='c5'?(reverse[val]||val):val;tokens[editIndex].edited=true;edited++;$('editModal').classList.remove('open');render();
+}
+function outputText(){
+ const format=$('format').value;
+ return tokens.map(t=>format==='vertical'?t.word+'_'+profile(t.tag):format==='tagged'?t.word+'_'+profile(t.tag):t.word+'/'+profile(t.tag)).join(format==='vertical'?'\n':' ');
+}
+function sourceCounts(){
+ const text=$('source').value;$('words').textContent=(text.trim().match(/\S+/g)||[]).length+' words';$('chars').textContent=text.length+' characters';$('sourceStatus').textContent=text.trim()?'Text loaded':'No document';
+}
+$('run').onclick=run;
+$('clear').onclick=()=>{$('source').value='';tokens=[];edited=0;render();sourceCounts();$('fileInput').value=''};
+$('sample').onclick=()=>{$('source').value='The students are carefully analysing the results of a recent environmental study. Their findings show that sustainable materials can reduce pollution significantly.';sourceCounts();run()};
+$('tagset').onchange=()=>{if(tokens.length)render()};
+$('freqSearch').oninput=updateStats;
+$('cancelEdit').onclick=()=>$('editModal').classList.remove('open');
+$('saveEdit').onclick=saveEdit;
+$('copy').onclick=async()=>{if(!tokens.length)return alert('No output to copy.');try{await navigator.clipboard.writeText(outputText());alert('Tagged output copied.')}catch(e){alert('Clipboard unavailable in this browser.')}};
+$('download').onclick=()=>{if(!tokens.length)return alert('No output to export.');const blob=new Blob([outputText()+'\n'],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='independent_POS_'+$('tagset').value.toUpperCase()+'.txt';a.click();URL.revokeObjectURL(url)};
+$('source').oninput=sourceCounts;
+$('fileInput').onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  if(file.name.toLowerCase().endsWith('.txt'))$('source').value=await file.text();
+  else if(file.name.toLowerCase().endsWith('.docx')){
+   const buffer=await file.arrayBuffer(),zip=await unzipDocx(buffer),xml=new DOMParser().parseFromString(zip,'text/xml');
+   $('source').value=[...xml.getElementsByTagName('w:p')].map(p=>[...p.getElementsByTagName('w:t')].map(t=>t.textContent).join('')).join('\n');
+  }else throw new Error('Please choose a DOCX or TXT file.');
+  sourceCounts();
+ }catch(err){alert('Could not read file: '+err.message)}
+};
+async function unzipDocx(buffer){
+ const bytes=new Uint8Array(buffer),view=new DataView(buffer);let end=-1;
+ for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65558);i--){if(view.getUint32(i,true)===0x06054b50){end=i;break}}
+ if(end<0)throw new Error('Invalid DOCX archive');
+ const count=view.getUint16(end+10,true);let offset=view.getUint32(end+16,true),entry=-1;
+ for(let n=0;n<count;n++){if(view.getUint32(offset,true)!==0x02014b50)break;const nl=view.getUint16(offset+28,true),el=view.getUint16(offset+30,true),cl=view.getUint16(offset+32,true),name=new TextDecoder().decode(bytes.slice(offset+46,offset+46+nl));if(name==='word/document.xml'){entry=offset;break}offset+=46+nl+el+cl}
+ if(entry<0)throw new Error('word/document.xml not found');
+ const method=view.getUint16(entry+10,true),size=view.getUint32(entry+20,true),start=view.getUint32(entry+42,true),dataStart=start+30+view.getUint16(start+26,true)+view.getUint16(start+28,true),compressed=bytes.slice(dataStart,dataStart+size);
+ if(method===0)return new TextDecoder().decode(compressed);if(method!==8)throw new Error('Unsupported DOCX compression');
+ const stream=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return await new Response(stream).text();
+}
+sourceCounts();updateStats();
+</script>
+</body></html>
